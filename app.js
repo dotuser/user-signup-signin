@@ -79,7 +79,7 @@ app
           bcrypt.compare(req.body.password, user.password, (e, result) => {
             if (result === true) {
               res.render("success", {
-                msg: "User Login Successful",
+                msg: `Welcome ${user.name}.`,
                 route: "/",
                 btnMsg: "Home",
               });
