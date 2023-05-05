@@ -104,23 +104,43 @@ app
     res.render("register");
   })
   .post((req, res) => {
-    bcrypt.hash(req.body.password, 10, (e, hash) => {
-      let reg = "Registration";
-      let log = "Login";
+    User.findOne({ username: req.body.username }).then((username) => {
+      if (username) {
+        res.render("error", {
+          msg: "Username already taken!",
+          route: "/register",
+          btnMsg: "Try Again",
+        });
+      } else {
+        User.findOne({ email: req.body.email }).then((email) => {
+          if (email) {
+            res.render("error", {
+              msg: "Email already registered!",
+              route: "/register",
+              btnMsg: "Try Again",
+            });
+          } else {
+            bcrypt.hash(req.body.password, 10, (e, hash) => {
+              let reg = "Registration";
+              let log = "Login";
 
-      const user = new User({
-        name: req.body.name,
-        username: req.body.username,
-        email: req.body.email,
-        password: hash,
-      });
-      user.save();
+              const user = new User({
+                name: req.body.name,
+                username: req.body.username,
+                email: req.body.email,
+                password: hash,
+              });
+              user.save();
 
-      res.render("success", {
-        msg: "User Registration Successful",
-        route: "/login",
-        btnMsg: "Login",
-      });
+              res.render("success", {
+                msg: "User Registration Successful",
+                route: "/login",
+                btnMsg: "Login",
+              });
+            });
+          }
+        });
+      }
     });
   });
 
